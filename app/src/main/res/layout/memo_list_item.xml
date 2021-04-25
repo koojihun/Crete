@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.ktiger.crete.viewmodel.MemoListItemViewModel"/>
+    </data>
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        card_view:cardCornerRadius="15dp"
+        card_view:cardElevation="10dp"
+        android:foreground="?android:attr/selectableItemBackground">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:minWidth="170dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/title_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#B0BCF9"
+                android:paddingLeft="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="2dp"
+                android:textSize="@dimen/memo_list_title_text_size"
+                android:textStyle="bold"
+                android:text="@{viewModel.title}"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"/>
+            <TextView
+                android:id="@+id/content_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:maxLines="100"
+                android:ellipsize="end"
+                android:breakStrategy="balanced"
+                android:textSize="@dimen/memo_list_contents_text_size"
+                android:text="@{viewModel.contents}"/>
+            <TextView
+                android:padding="5dp"
+                android:id="@+id/time_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/memo_list_time_text_size"
+                android:gravity="end"
+                android:text="@{viewModel.time}"/>
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</layout>
