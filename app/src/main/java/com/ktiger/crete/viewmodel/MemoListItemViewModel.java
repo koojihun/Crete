@@ -15,7 +15,7 @@ public class MemoListItemViewModel {
     }
 
     public void loadMemo(Memo memo) {
-        time.set(memo.getTitle());
+        title.set(memo.getTitle());
         contents.set(memo.getContents());
         time.set(memo.getTime());
     }

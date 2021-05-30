@@ -11,26 +11,29 @@ import com.ktiger.crete.model.Category;
 import java.util.List;
 
 import io.reactivex.Completable;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 
 @Dao
 public interface CategoryDao {
 
     @Query("SELECT COUNT(*) FROM category")
-    Observable<Integer> getCount();
+    Single<Integer> getCount();
+
+    @Query("SELECT * FROM category WHERE name = :name")
+    Single<Category> loadByName(String name);
+
+    @Insert
+    Completable insert(Category category);
 
     @Query("SELECT * FROM category")
-    List<Category> getAll();
+    Single<List<Category>> getAll();
 
     @Query("SELECT * FROM category WHERE id = :id")
     Category loadById(int id);
 
     @Insert
     void insertAll(Category... categories);
-
-    @Insert
-    Completable insert(Category category);
 
     @Delete
     int delete(Category category);

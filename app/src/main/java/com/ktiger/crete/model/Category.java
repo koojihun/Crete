@@ -11,6 +11,8 @@ import java.io.Serializable;
 @Entity(indices = {@Index(value = {"name"}, unique = true)})
 public class Category implements Serializable {
 
+    public static final String DEFAULT_CATEGORY_NAME = "untitled";
+
     public Category(String name) { this.name = name; }
 
     @PrimaryKey(autoGenerate = true)

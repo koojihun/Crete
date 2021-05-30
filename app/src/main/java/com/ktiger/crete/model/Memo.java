@@ -29,10 +29,11 @@ public class Memo implements Serializable {
     @ColumnInfo(name = "category_id")
     private int category_id;
 
-    public Memo(String title, String contents, String time) {
+    public Memo(String title, String contents, int category_id) {
         this.title = title;
         this.contents = contents;
-        this.time = time;
+        this.fillTime();
+        this.category_id = category_id;
     }
 
     public Memo() { }
@@ -63,7 +64,7 @@ public class Memo implements Serializable {
         this.time = time;
     }
 
-    public void setTime() {
+    public void fillTime() {
         Calendar cal = Calendar.getInstance();
 
         SimpleDateFormat date = new SimpleDateFormat("yy/MM/dd");

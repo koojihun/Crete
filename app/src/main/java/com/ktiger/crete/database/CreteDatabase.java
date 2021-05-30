@@ -34,18 +34,25 @@ public abstract class CreteDatabase extends RoomDatabase {
         return  database;
     }
 
-    public static void makeDefaultCategoryIfNeeded() {
-        final String defaultCategoryName = "untitled";
+    private static void makeDefaultCategoryIfNeeded() {
         database.categoryDao().getCount()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         count -> {
                             if (count == 0) {
-                                database.categoryDao().insert(new Category(defaultCategoryName))
+                                database.categoryDao().insert(new Category(Category.DEFAULT_CATEGORY_NAME))
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe(() -> {Log.d("TEST", "DEFAULT CATEGORY ADDED");});
+                                        .subscribe(
+                                                () -> { Log.d("CreteDatabase", "DEFAULT CATEGORY ADDED"); },
+                                                throwable -> { Log.d("CreteDatabase", "DEFAULT CATEGORY FAILED \n" + throwable.getMessage()); });
+                                database.categoryDao().insert(new Category("abcd"))
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe(
+                                                () -> { Log.d("CreteDatabase", "DEFAULT CATEGORY ADDED"); },
+                                                throwable -> { Log.d("CreteDatabase", "DEFAULT CATEGORY FAILED \n" + throwable.getMessage()); });
                             }
                         });
     }

@@ -1,7 +1,10 @@
 package com.ktiger.crete.view;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +14,7 @@ import com.ktiger.crete.R;
 import com.ktiger.crete.contract.MemoListContract;
 import com.ktiger.crete.database.CreteDatabase;
 import com.ktiger.crete.databinding.ActivityMemoListBinding;
+import com.ktiger.crete.model.Category;
 import com.ktiger.crete.model.Memo;
 import com.ktiger.crete.viewmodel.MemoListViewModel;
 import com.wajahatkarim3.roomexplorer.RoomExplorer;
@@ -19,8 +23,11 @@ import java.util.List;
 
 public class MemoListActivity extends AppCompatActivity implements MemoListContract {
 
+    final int MEMO_LIST_ACTIVITY_CODE = 0;
+
     private MemoAdapter memoAdapter;
     private MemoListViewModel viewModel;
+    private Category currentCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,8 @@ public class MemoListActivity extends AppCompatActivity implements MemoListContr
 
         setUpViews();
 
+        viewModel.setCurrentCategoryAndLoadMemos(Category.DEFAULT_CATEGORY_NAME);
+
         RoomExplorer.show(this, CreteDatabase.class, "crete.db");
     }
 
@@ -44,12 +53,53 @@ public class MemoListActivity extends AppCompatActivity implements MemoListContr
 
         memoRecyclerView.setLayoutManager(memoLayoutManager);
         memoRecyclerView.setAdapter(memoAdapter);
-
-        viewModel.loadMemos();
     }
 
     @Override
-    public void setMemos(List<Memo> memos) {
+    public void openWriteActivity()
+    {
+        final Intent intent = new Intent(this, MemoWriteActivity.class);
+        intent.putExtra("category", currentCategory);
+
+        startActivityForResult(intent, MEMO_LIST_ACTIVITY_CODE);
+    }
+
+    @Override
+    public void setCurrentCategory(Category category)
+    {
+        this.currentCategory = category;
+    }
+
+    @Override
+    public void setMemos(List<Memo> memos)
+    {
         memoAdapter.setMemosAndRefresh(memos);
+    }
+
+    @Override
+    public Context getContext()
+    {
+        return this;
+    }
+
+    @Override
+    public Category getCurrentCategory()
+    {
+        return currentCategory;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MEMO_LIST_ACTIVITY_CODE)
+        {
+            if (resultCode == RESULT_OK)
+            {
+                viewModel.loadMemos(currentCategory.getId());
+            }
+        }
+
     }
 }

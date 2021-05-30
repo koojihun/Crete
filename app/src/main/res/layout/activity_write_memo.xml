@@ -13,7 +13,8 @@
         <Spinner
             android:id="@+id/category_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:onItemSelected="@{viewModel::onCategoryItemSelected}"/>
         <EditText
             android:id="@+id/title_edit_text"
             android:layout_width="match_parent"
