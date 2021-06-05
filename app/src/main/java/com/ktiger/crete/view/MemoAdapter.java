@@ -10,14 +10,17 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ktiger.crete.R;
+import com.ktiger.crete.contract.MemoListItemContract;
 import com.ktiger.crete.databinding.MemoListItemBinding;
 import com.ktiger.crete.model.Memo;
+import com.ktiger.crete.view.dialog.MemoDeleteDialog;
 import com.ktiger.crete.viewmodel.MemoListItemViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.ViewHolder> {
+public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.ViewHolder> implements MemoListItemContract
+{
 
     private Context context;
     private List<Memo> memoList;
@@ -31,7 +34,7 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         MemoListItemBinding binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.memo_list_item, parent, false);
-        binding.setViewModel(new MemoListItemViewModel());
+        binding.setViewModel(new MemoListItemViewModel(this));
         return new ViewHolder(binding.getRoot(), binding.getViewModel());
     }
 
@@ -51,16 +54,39 @@ public class MemoAdapter extends RecyclerView.Adapter<MemoAdapter.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    @Override
+    public void showDeleteDialog(Memo memo)
+    {
+        new MemoDeleteDialog(context, R.style.RoundedCornersDialog,this , memo).show();
+    }
+
+    @Override
+    public void deleteMemo(Memo memo)
+    {
+        int idx = memoList.indexOf(memo);
+        if (idx != -1)
+        {
+            memoList.remove(idx);
+            notifyItemRemoved(idx);
+        }
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         private MemoListItemViewModel viewModel;
+        private Memo memo;
 
         public ViewHolder(@NonNull View itemView, MemoListItemViewModel viewModel) {
             super(itemView);
             this.viewModel = viewModel;
         }
 
-        public void loadMemo(Memo memo) { viewModel.loadMemo(memo); }
+        public void loadMemo(Memo memo) {
+            this.memo = memo;
+            viewModel.loadMemo(memo);
+
+            itemView.setOnLongClickListener(v -> viewModel.onLongClick() );
+        }
 
     }
 

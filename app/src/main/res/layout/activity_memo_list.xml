@@ -8,25 +8,47 @@
             name="viewModel"
             type="com.ktiger.crete.viewmodel.MemoListViewModel"/>
     </data>
-    <RelativeLayout
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".view.MemoListActivity">
+        android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/memo_recycler_view"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            tools:context=".view.MemoListActivity">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/plus_memo_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/ic_input_add"
-            android:onClick="@{viewModel::startWriteMemoActivity}"/>
+            <TextView
+                android:id="@+id/empty_memo_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="카테고리가 비었습니다"
+                android:visibility="invisible"/>
 
-    </RelativeLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/memo_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"/>
+
+            <ImageButton
+                android:id="@+id/add_memo_btn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_margin="20dp"
+                app:srcCompat="@android:drawable/ic_menu_edit"
+                android:background="@drawable/add_btn_background"
+                android:elevation="10dp"
+                android:onClick="@{viewModel::startWriteMemoActivity}"/>
+
+        </RelativeLayout>
+
+        <include layout="@layout/category_list"/>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
 </layout>

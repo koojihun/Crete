@@ -13,7 +13,9 @@
         android:layout_margin="20dp"
         card_view:cardCornerRadius="15dp"
         card_view:cardElevation="10dp"
-        android:foreground="?android:attr/selectableItemBackground">
+        android:foreground="?android:attr/selectableItemBackground"
+        android:onClick="@{viewModel::click}"
+        android:longClickable="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="5dp"
-                android:maxLines="100"
+                android:maxLines="25"
                 android:ellipsize="end"
                 android:breakStrategy="balanced"
                 android:textSize="@dimen/memo_list_contents_text_size"

@@ -1,14 +1,15 @@
 package com.ktiger.crete.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import com.ktiger.crete.R;
 import com.ktiger.crete.contract.MemoWriteContract;
 import com.ktiger.crete.databinding.ActivityWriteMemoBinding;
 import com.ktiger.crete.model.Category;
+import com.ktiger.crete.model.Memo;
 import com.ktiger.crete.viewmodel.MemoWriteViewModel;
 
 import java.util.List;
@@ -33,13 +35,16 @@ public class MemoWriteActivity extends AppCompatActivity implements MemoWriteCon
     private EditText titleEditText;
     private EditText contentsEditText;
 
+    private Memo givenMemo;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.currentCategory = (Category) getIntent().getSerializableExtra("category");
+        this.givenMemo = (Memo) getIntent().getSerializableExtra("memo");
 
-        this.viewModel = new MemoWriteViewModel(this);
+        this.viewModel = new MemoWriteViewModel(this, givenMemo);
 
         final ActivityWriteMemoBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_write_memo);
 
@@ -60,6 +65,8 @@ public class MemoWriteActivity extends AppCompatActivity implements MemoWriteCon
         categoriesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         categoriesSpinner.setAdapter(categoriesAdapter);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
     @Override
@@ -72,7 +79,13 @@ public class MemoWriteActivity extends AppCompatActivity implements MemoWriteCon
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_write_menu_button:
-                viewModel.saveMemo(titleEditText.getText(), contentsEditText.getText());
+                if (titleEditText.getText().length() == 0 || isAllBlank(titleEditText.getText().toString()))
+                {
+                    Toast.makeText(this, "제목을 입력하세요", Toast.LENGTH_LONG).show();
+                } else
+                {
+                    viewModel.saveMemo(titleEditText.getText(), contentsEditText.getText());
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -116,4 +129,15 @@ public class MemoWriteActivity extends AppCompatActivity implements MemoWriteCon
         setResult(resultCode);
         finish();
     }
+
+    private boolean isAllBlank(String text)
+    {
+        for (char ch : text.toCharArray())
+        {
+            if (ch != ' ')
+                return false;
+        }
+        return true;
+    }
+
 }

@@ -9,14 +9,9 @@ import java.util.List;
 
 public interface MemoListContract {
 
-    void setMemos(List<Memo> memos);
-
+    void setMemoList(List<Memo> memoList);
     Context getContext();
-
-    Category getCurrentCategory();
-
-    void setCurrentCategory(Category category);
-
     void openWriteActivity();
-
+    void openWriteActivity(Memo memo);
+    void closeDrawer();
 }

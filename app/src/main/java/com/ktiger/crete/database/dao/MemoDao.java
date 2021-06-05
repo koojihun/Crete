@@ -22,6 +22,9 @@ public interface MemoDao {
     @Insert
     Completable insert(Memo memo);
 
+    @Delete
+    Completable delete(Memo memo);
+
     @Query("SELECT * FROM memo")
     List<Memo> getAll();
 
@@ -35,12 +38,9 @@ public interface MemoDao {
     void insertAll(Memo... memos);
 
     @Delete
-    int delete(Memo memo);
-
-    @Delete
     int deleteSelected(Memo... memos);
 
     @Update
-    void update(Memo memo);
+    Completable update(Memo memo);
 
 }

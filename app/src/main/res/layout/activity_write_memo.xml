@@ -13,17 +13,34 @@
         <Spinner
             android:id="@+id/category_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
             android:onItemSelected="@{viewModel::onCategoryItemSelected}"/>
         <EditText
             android:id="@+id/title_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginRight="15dp"
+            android:layout_marginLeft="15dp"
+            android:singleLine="true"
+            android:textSize="25sp"
+            android:fontFamily="@font/custom_font_family"
             android:text="@{viewModel.title}"/>
         <EditText
             android:id="@+id/contents_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@{viewModel.contents}"/>
+            android:layout_height="0dp"
+            android:layout_weight="8.5"
+            android:background="@android:color/transparent"
+            android:layout_margin="15dp"
+            android:gravity="start"
+            android:textSize="20sp"
+            android:fontFamily="@font/custom_font_family"
+            android:text="@{viewModel.contents}"
+            android:scrollbars="vertical"/>
     </LinearLayout>
 </layout>
+

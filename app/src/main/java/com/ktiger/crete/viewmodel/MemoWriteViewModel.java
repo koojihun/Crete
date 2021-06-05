@@ -1,12 +1,10 @@
 package com.ktiger.crete.viewmodel;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -14,9 +12,6 @@ import com.ktiger.crete.contract.MemoWriteContract;
 import com.ktiger.crete.database.CreteDatabase;
 import com.ktiger.crete.model.Memo;
 
-import java.util.ArrayList;
-
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -25,11 +20,18 @@ import static android.app.Activity.RESULT_OK;
 public class MemoWriteViewModel {
 
     private MemoWriteContract view;
+    private Memo givenMemo;
 
     public MutableLiveData<String> title = new MutableLiveData<>();
     public MutableLiveData<String> contents = new MutableLiveData<>();
 
-    public MemoWriteViewModel(MemoWriteContract view) { this.view = view; }
+    public MemoWriteViewModel(MemoWriteContract view, Memo givenMemo)
+    {
+        this.view = view;
+        this.givenMemo = givenMemo;
+        if (givenMemo != null)
+            loadMemo(givenMemo);
+    }
 
     @SuppressLint("CheckResult")
     public void loadCategories()
@@ -48,27 +50,48 @@ public class MemoWriteViewModel {
                 );
     }
 
-    public void loadMemo() {
-        title.setValue("test title");
-        contents.setValue("test contents");
+    private void loadMemo(Memo memo) {
+        title.setValue(memo.getTitle());
+        contents.setValue(memo.getContents());
     }
 
     @SuppressLint("CheckResult")
     public void saveMemo(Editable title, Editable contents)
     {
-        Memo memo = new Memo(title.toString(), contents.toString(), view.getCurrentCategory().getId());
-        CreteDatabase.getDbInstance(view.getContext()).memoDao()
-                .insert(memo)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        () -> {
-                            view.finishViewWithResult(RESULT_OK);
-                        },
-                        throwable -> {
-                            Log.d("MemoWriteViewModel", throwable.getMessage());
-                        }
-                );
+        if (givenMemo == null)
+        {
+            Memo memo = new Memo(title.toString(), contents.toString(), view.getCurrentCategory().getId());
+            CreteDatabase.getDbInstance(view.getContext()).memoDao()
+                    .insert(memo)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            () -> {
+                                view.finishViewWithResult(RESULT_OK);
+                            },
+                            throwable -> {
+                                Log.d("MemoWriteViewModel", throwable.getMessage());
+                            }
+                    );
+        } else
+        {
+            givenMemo.setTitle(title.toString());
+            givenMemo.setContents(contents.toString());
+            givenMemo.setCategory_id(view.getCurrentCategory().getId());
+            givenMemo.fillTime();
+            CreteDatabase.getDbInstance(view.getContext()).memoDao()
+                    .update(givenMemo)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                            () -> {
+                                view.finishViewWithResult(RESULT_OK);
+                            },
+                            throwable -> {
+                                Log.d("MemoWriteViewModel", throwable.getMessage());
+                            }
+                    );
+        }
     }
 
     @SuppressLint("CheckResult")

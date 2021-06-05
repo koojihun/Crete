@@ -36,7 +36,7 @@ public interface CategoryDao {
     void insertAll(Category... categories);
 
     @Delete
-    int delete(Category category);
+    Completable delete(Category category);
 
     @Delete
     int deleteSelected(Category... categories);

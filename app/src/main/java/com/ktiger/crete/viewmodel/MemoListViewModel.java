@@ -6,6 +6,8 @@ import android.view.View;
 
 import com.ktiger.crete.contract.MemoListContract;
 import com.ktiger.crete.database.CreteDatabase;
+import com.ktiger.crete.model.Category;
+import com.ktiger.crete.model.Memo;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -13,7 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 public class MemoListViewModel {
 
     private MemoListContract view;
-
+    private Category currentCategory;
     public MemoListViewModel(MemoListContract view) { this.view = view; }
 
     @SuppressLint("CheckResult")
@@ -25,8 +27,8 @@ public class MemoListViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         category -> {
-                            view.setCurrentCategory(category);
-                            loadMemos(category.getId());
+                            currentCategory = category;
+                            loadMemosOfCurrentCategory();
                         },
                         throwable -> {
                             Log.d("MemoListViewModel", throwable.getMessage());
@@ -35,13 +37,33 @@ public class MemoListViewModel {
     }
 
     @SuppressLint("CheckResult")
-    public void loadMemos(int categoryId) {
+    public void setCurrentCategoryAndLoadMemos(Category category)
+    {
+        CreteDatabase.getDbInstance(view.getContext()).memoDao()
+                .loadByCategoryId(category.getId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        memos -> {
+                            currentCategory = category;
+                            view.setMemoList(memos);
+                            view.closeDrawer();
+                        },
+                        throwable -> {
+                            Log.d("MemoListViewModel", throwable.getMessage());
+                        }
+                );
+    }
+
+    @SuppressLint("CheckResult")
+    public void loadMemosOfCurrentCategory() {
+        int categoryId = currentCategory.getId();
         CreteDatabase.getDbInstance(view.getContext()).memoDao()
                 .loadByCategoryId(categoryId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        memos -> view.setMemos(memos),
+                        memos -> view.setMemoList(memos),
                         throwable -> {
                             Log.d("MemoListViewModel", throwable.getMessage());
                         }
@@ -51,6 +73,16 @@ public class MemoListViewModel {
     public void startWriteMemoActivity(View button)
     {
         view.openWriteActivity();
+    }
+
+    public void startWriteMemoActivity(Memo memo)
+    {
+        view.openWriteActivity(memo);
+    }
+
+    public Category getCurrentCategory()
+    {
+        return currentCategory;
     }
 
 }
